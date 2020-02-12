@@ -139,6 +139,7 @@ namespace Test.Gherkin.Step
             //Asserting that the order is the one as expected
             Assert.IsTrue(productsList.SequenceEqual(productsList.OrderBy(a => a.FinalPrice)));            
 
+
             //Printing in the console
             for (int i = 0; i < productsList.Count; i++)
             {

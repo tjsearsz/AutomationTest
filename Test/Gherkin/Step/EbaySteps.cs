@@ -143,7 +143,23 @@ namespace Test.Gherkin.Step
             for (int i = 0; i < productsList.Count; i++)
             {
                 Console.WriteLine("Product number " + (i + 1) + " ---> " + productsList[i].ToString());
-            }            
+            }
+
+            //Sorting products by name (ascendant) and printing them in console
+            productsList = productsList.OrderBy(d => d.Name).ToList();
+            Console.WriteLine("\n Sorting products by name (ascendant): \n");
+            for (int i = 0; i < productsList.Count; i++)
+            {
+                Console.WriteLine("Product number " + (i + 1) + " ---> " + productsList[i].ToString());
+            }
+
+            //Sorting products by price (descendant) and printing them in console
+            productsList = productsList.OrderByDescending(d => d.FinalPrice).ToList();
+            Console.WriteLine("\n Sorting products by price (descendant): \n");
+            for (int i = 0; i < productsList.Count; i++)
+            {
+                Console.WriteLine("Product number " + (i + 1) + " ---> " + productsList[i].ToString());
+            }
         }
     }
 }

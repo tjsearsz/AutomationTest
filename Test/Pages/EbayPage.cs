@@ -55,18 +55,11 @@ namespace Test.Pages
 
         //Get ascendant sort option element
         [FindsBy(How = How.CssSelector, Using = ".srp-sort__menu > li")]
-        IList<IWebElement> ascendantPrice;        
+        IList<IWebElement> ascendantPrice;
 
-        /// <summary>
-        /// Property to get the price in descendant order
-        /// </summary>
-        // Descendante price filter element
-      //  [FindsBy(How = How.CssSelector, Using = ".srp-sort__menu > li")] //Checkthis
-       // private IWebElement descendantPrice;
-       // public IWebElement DescendantPrice
-       // {
-       //     get { return this.driver.FindElements(By.CssSelector(".srp-sort__menu > li"))[4]; } //check this
-//}
+        //Cancel button located in filter's modal
+        [FindsBy(How = How.CssSelector, Using = ".x-overlay-footer__cancel > button")]
+        private IWebElement FiltersModalCancelButton;        
 
         #region Language
         //Language dropdown element
@@ -75,14 +68,11 @@ namespace Test.Pages
 
         //Current language element
         [FindsBy(How = How.CssSelector, Using = "#gh-eb-Geo-a-default > span.gh-eb-Geo-txt")]
-        private IWebElement currentLanguage;        
-
-        /// <summary>
-        /// Property for getting a the english language in the dropdown
-        /// </summary>
+        private IWebElement currentLanguage;
+        
         // English option element
         [FindsBy(How = How.CssSelector, Using = "#gh-eb-Geo-o > ul > li")]
-        private IWebElement englishOption;
+        private IWebElement englishOption;        
 
         /// <summary>
         /// This method changes the current ebay language to english
@@ -139,17 +129,41 @@ namespace Test.Pages
         /// </summary>
         public void FilterForASpecificBrand(String brand)
         {
-            this.waitManager.Until(d => brandFilter.Displayed);
-            //Clicking on the Brand section
-            this.brandFilter.Click();
+            
+            bool brandOptionsFound = false;
 
-            this.waitManager.Until(d => brandSearchBar.Displayed);
+            /*Sometimes, the filter modal does not load. It stays in an infinite loop 
+             * to avoid a timeout, we just simply retry closing and opening the modal
+             */
+            while(!brandOptionsFound)
+            {
+                try
+                {
+                    this.waitManager.Until(d => brandFilter.Displayed);
+                    //Clicking on the Brand section
+                    this.brandFilter.Click();
 
-            //Searching for the PUMA brand
-            this.brandSearchBar.SendKeys(brand);            
+                    this.waitManager.Until(d => brandSearchBar.Displayed);
 
-            //Searching for the PUMA option and clicking on it
-            this.SelectCheckBoxForSpecificFilter(brand).Click();
+                    //Searching for the PUMA brand
+                    this.brandSearchBar.SendKeys(brand);
+
+                    //Searching for the PUMA option and clicking on it
+                    this.SelectCheckBoxForSpecificFilter(brand).Click();
+
+                    //If everything goes well, we just simply don't do this step
+                    brandOptionsFound = true;
+                }
+                catch (WebDriverTimeoutException ex)
+                {
+                    //Clicking on cancel to close the modal and reopen it again
+                    this.waitManager.Until(d => FiltersModalCancelButton.Displayed);
+                    this.FiltersModalCancelButton.Click();
+
+                    //Opening the modal again
+                    OpenMoreFiltersOption();
+                }
+            }            
         }
 
         /// <summary>
@@ -187,8 +201,8 @@ namespace Test.Pages
             this.WaitForPageReloadAfterApplyingFilters();
 
             //We print the number of results
-            Console.WriteLine("Number of results found: " +
-                this.numberOfResults[0].Text);
+            Console.WriteLine("\n Number of results found: " +
+                this.numberOfResults[0].Text + "\n");
 
             //Placing mouse on top of the sort button
             PeformMouseOver(this.sortButton[3]);

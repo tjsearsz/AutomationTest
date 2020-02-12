@@ -37,8 +37,7 @@ namespace Test.Gherkin.Step
             //Setting the default wait
             //this.driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(40);
 
-            //this.waitManager = new WebDriverWait(this.driver, TimeSpan.FromSeconds(20));
-            
+            //this.waitManager = new WebDriverWait(this.driver, TimeSpan.FromSeconds(20));            
 
             //Instanciating EbayPage            
             this.ebayPage = new EbayPage(this.driver);

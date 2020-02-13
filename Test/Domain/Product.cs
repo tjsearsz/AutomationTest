@@ -76,7 +76,7 @@ namespace Test.Domain
         /// <returns>A string representation of this product</returns>
         public override string ToString()
         {
-            return String.Format("Name: {0} | Price (Including Shipping): {1}"
+            return String.Format(Strings.TO_STRING_OUTPUT
                 , this.name, this.FinalPrice);
         }
     }

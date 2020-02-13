@@ -1,7 +1,4 @@
 ﻿using NUnit.Framework;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,45 +12,10 @@ namespace Test.Gherkin.Step
     /// Class that contains all logic (steps) to search on Ebay
     /// </summary>
     [Binding]
-    public class EbaySteps //: BaseSteps
+    public class EbaySteps: BaseSteps
     {
         //Driver we will use to nagivate in Google Chrome
         private EbayPage ebayPage;
-
-        //Attributes of the class
-        protected IWebDriver driver;
-
-        
-
-        /// <summary>
-        /// Method used to load the initial configuration
-        /// </summary>
-        [BeforeScenario]
-        public void LoadTest()
-        {
-            //Asigning the chrome driver and setting the default wait
-            this.driver = new ChromeDriver();
-
-            //Setting the default wait
-            //this.driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(40);
-
-            //this.waitManager = new WebDriverWait(this.driver, TimeSpan.FromSeconds(20));            
-
-            //Instanciating EbayPage            
-            this.ebayPage = new EbayPage(this.driver);
-
-            //Opening browser in full window size
-            this.driver.Manage().Window.Maximize();            
-        }
-
-        /// <summary>
-        /// Method used to close the chromedriver
-        /// </summary>
-        [AfterScenario]
-        public void CloseTest()
-        {
-            this.driver.Quit();
-        }
 
         /// <summary>
         /// Step in which the user enters on Ebay webpage
@@ -61,8 +23,11 @@ namespace Test.Gherkin.Step
         [Given(@"User enters on Ebay")]
         public void GivenUserEntersOnEbay()
         {
+            //Instanciating EbayPage            
+            this.ebayPage = MainPageFactory.CreateEbayPage(driver);
+
             //Accessing into the webpage
-            this.ebayPage.GoToUrl("https://www.ebay.com/");
+            this.ebayPage.GoToUrl(Strings.EBAY_WEBSITE);
 
             //Changing the language to english
             this.ebayPage.ChangeLanguageToEnglish();    
@@ -136,28 +101,32 @@ namespace Test.Gherkin.Step
             List<Product> productsList = this.ebayPage.GetListOfProducts(5);            
 
             //Asserting that the order is the one as expected
-            Assert.IsTrue(productsList.SequenceEqual(productsList.OrderBy(a => a.FinalPrice)));            
+            Assert.IsTrue(productsList.SequenceEqual(productsList.OrderBy(a => a.FinalPrice)));
 
             //Printing in the console
+            Console.WriteLine(Strings.PRODUCTS_FOUND.Replace("\\n", "\n"));
             for (int i = 0; i < productsList.Count; i++)
             {
-                Console.WriteLine("Product number " + (i + 1) + " ---> " + productsList[i].ToString());
+                Console.WriteLine(Strings.PRODUCT_NUMBER_STRING.Replace("\\n","\n") 
+                                + (i + 1) + Strings.ARROW_STRING + productsList[i].ToString());
             }
 
             //Sorting products by name (ascendant) and printing them in console
             productsList = productsList.OrderBy(d => d.Name).ToList();
-            Console.WriteLine("\n Sorting products by name (ascendant): \n");
+            Console.WriteLine(Strings.SORTING_NAME_OUTPUT.Replace("\\n", "\n"));
             for (int i = 0; i < productsList.Count; i++)
             {
-                Console.WriteLine("Product number " + (i + 1) + " ---> " + productsList[i].ToString());
+                Console.WriteLine(Strings.PRODUCT_NUMBER_STRING + (i + 1) +
+                                  Strings.ARROW_STRING + productsList[i].ToString());
             }
 
             //Sorting products by price (descendant) and printing them in console
             productsList = productsList.OrderByDescending(d => d.FinalPrice).ToList();
-            Console.WriteLine("\n Sorting products by price (descendant): \n");
+            Console.WriteLine(Strings.SORTING_PRICE_DESCENDING.Replace("\\n", "\n"));
             for (int i = 0; i < productsList.Count; i++)
             {
-                Console.WriteLine("Product number " + (i + 1) + " ---> " + productsList[i].ToString());
+                Console.WriteLine(Strings.PRODUCT_NUMBER_STRING + (i + 1) + 
+                                  Strings.ARROW_STRING + productsList[i].ToString());
             }
         }
     }

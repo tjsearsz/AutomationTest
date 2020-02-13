@@ -1,6 +1,4 @@
 ﻿using NUnit.Framework;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +27,7 @@ namespace Test.Gherkin.Step
             this.ebayPage = MainPageFactory.CreateEbayPage(driver);
 
             //Accessing into the webpage
-            this.ebayPage.GoToUrl("https://www.ebay.com/");
+            this.ebayPage.GoToUrl(Strings.EBAY_WEBSITE);
 
             //Changing the language to english
             this.ebayPage.ChangeLanguageToEnglish();    
@@ -103,28 +101,32 @@ namespace Test.Gherkin.Step
             List<Product> productsList = this.ebayPage.GetListOfProducts(5);            
 
             //Asserting that the order is the one as expected
-            Assert.IsTrue(productsList.SequenceEqual(productsList.OrderBy(a => a.FinalPrice)));            
+            Assert.IsTrue(productsList.SequenceEqual(productsList.OrderBy(a => a.FinalPrice)));
 
             //Printing in the console
+            Console.WriteLine(Strings.PRODUCTS_FOUND.Replace("\\n", "\n"));
             for (int i = 0; i < productsList.Count; i++)
             {
-                Console.WriteLine("Product number " + (i + 1) + " ---> " + productsList[i].ToString());
+                Console.WriteLine(Strings.PRODUCT_NUMBER_STRING.Replace("\\n","\n") 
+                                + (i + 1) + Strings.ARROW_STRING + productsList[i].ToString());
             }
 
             //Sorting products by name (ascendant) and printing them in console
             productsList = productsList.OrderBy(d => d.Name).ToList();
-            Console.WriteLine("\n Sorting products by name (ascendant): \n");
+            Console.WriteLine(Strings.SORTING_NAME_OUTPUT.Replace("\\n", "\n"));
             for (int i = 0; i < productsList.Count; i++)
             {
-                Console.WriteLine("Product number " + (i + 1) + " ---> " + productsList[i].ToString());
+                Console.WriteLine(Strings.PRODUCT_NUMBER_STRING + (i + 1) +
+                                  Strings.ARROW_STRING + productsList[i].ToString());
             }
 
             //Sorting products by price (descendant) and printing them in console
             productsList = productsList.OrderByDescending(d => d.FinalPrice).ToList();
-            Console.WriteLine("\n Sorting products by price (descendant): \n");
+            Console.WriteLine(Strings.SORTING_PRICE_DESCENDING.Replace("\\n", "\n"));
             for (int i = 0; i < productsList.Count; i++)
             {
-                Console.WriteLine("Product number " + (i + 1) + " ---> " + productsList[i].ToString());
+                Console.WriteLine(Strings.PRODUCT_NUMBER_STRING + (i + 1) + 
+                                  Strings.ARROW_STRING + productsList[i].ToString());
             }
         }
     }

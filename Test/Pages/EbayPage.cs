@@ -82,7 +82,7 @@ namespace Test.Pages
             WaitForElement(languageDropdown);
            
             //If the language on Ebay is not English, we will change it
-            if ( !this.currentLanguage.Text.Equals("English"))
+            if ( !this.currentLanguage.Text.Equals(Strings.ENGLISH_LANGUAGE))
             {
                 //Opening the language dropdown
                 this.languageDropdown.Click();
@@ -223,7 +223,7 @@ namespace Test.Pages
             this.WaitForPageReloadAfterApplyingFilters();
 
             //We print the number of results
-            Console.WriteLine("\n Number of results found: " +
+            Console.WriteLine(Strings.RESULTS_FOUND.Replace("\\n", "\n") +
                 this.numberOfResults[0].Text + "\n");
 
             //Placing mouse on top of the sort button
@@ -249,16 +249,16 @@ namespace Test.Pages
             foreach(IWebElement aux in GetRawDataOfProducts(5))
             {
                 //Getting the raw string where the price is located
-                String RawPriceText = aux.FindElement(By.CssSelector("span.s-item__price")).Text;
+                String RawPriceText = aux.FindElement(By.CssSelector(Strings.RAW_PRICE_TEXT)).Text;
 
                 //Getting rid off the currency
-                List<String> ValuesOfText = Regex.Split(RawPriceText, @"[^0-9\.,]+")
+                List<String> ValuesOfText = Regex.Split(RawPriceText, @Strings.PRICE_REGEX)
                                     .Where(a => a != "." && a.Trim() != "").ToList();
 
                 Decimal priceAux = Decimal.Parse(ValuesOfText[0].Trim());
 
                 //Getting the raw string where the name is located
-                String NameAux = aux.FindElement(By.CssSelector("a.s-item__link > h3")).Text;
+                String NameAux = aux.FindElement(By.CssSelector(Strings.RAW_NAME_TEXT)).Text;
 
                 //If shipping has a value, we will updated. Otherwise, we will add 0
                 Decimal shippingAux = 0;
@@ -267,13 +267,13 @@ namespace Test.Pages
                  * indeed a valid price (no free shipping text or any other label)
                  * we will add it as shipping cost
                 */
-                if (aux.FindElements(By.CssSelector("span.s-item__logisticsCost")).Count > 0
-                    && aux.FindElement(By.CssSelector("span.s-item__logisticsCost")).Text.Any(char.IsDigit))
+                if (aux.FindElements(By.CssSelector(Strings.RAW_LOGICIST_COST_TEXT)).Count > 0
+                    && aux.FindElement(By.CssSelector(Strings.RAW_LOGICIST_COST_TEXT)).Text.Any(char.IsDigit))
                 {
-                    String RawShippingText = aux.FindElement(By.CssSelector("span.s-item__logisticsCost")).Text;
+                    String RawShippingText = aux.FindElement(By.CssSelector(Strings.RAW_LOGICIST_COST_TEXT)).Text;
 
                     //Getting rid off the currency
-                    List<String> ValuesOfShipping = Regex.Split(RawShippingText, @"[^0-9\.]+")
+                    List<String> ValuesOfShipping = Regex.Split(RawShippingText, @Strings.PRICE_REGEX)
                                         .Where(a => a != "." && a.Trim() != "").ToList();
 
                     //Adding to the list the price
@@ -307,16 +307,17 @@ namespace Test.Pages
             for (int i = 1; i <= number; i ++)
             {
                 //Waiting for this product to be obtained
-                WaitForElement(this.driver.FindElement(By.Id("srp-river-results-listing" + i)));
+                WaitForElement(this.driver.FindElement(By.Id(Strings.PRODUCT_ID + i)));
                 
                 /*Since all the results on Ebay have the same id, we just need to
                  * iterate changing the id name with the corresponding number */
-                result.Add(this.driver.FindElement(By.Id("srp-river-results-listing" + i)));
+                result.Add(this.driver.FindElement(By.Id(Strings.PRODUCT_ID + i)));
             }
 
             return result;
         }
 
+        #region DeprecatedMethods
         /// <summary>
         /// Method that gets all the prices for the list of results we have
         /// </summary>
@@ -410,6 +411,7 @@ namespace Test.Pages
 
             return prices;
         }
+        #endregion
 
         /// <summary>
         /// Method that gets the checkbox for a specific filter
@@ -434,10 +436,10 @@ namespace Test.Pages
                  * in order to take only the part of the string we need.
                  * Having taking the name, if it is the one we are looking for, then we get its checkbox*/
                 if (aux.FindElement(By.CssSelector
-                    ("label > div > div > span.cbx.x-refine__multi-select-cbx"))
+                    (Strings.BRAND_NAME))
                     .Text.Split("(")[0].Trim().Equals(filter))
                 {
-                    CheckBox = aux.FindElement(By.CssSelector("label > div > input"));
+                    CheckBox = aux.FindElement(By.CssSelector(Strings.CHECKBOX_SELECTOR));
                     ElementFound = true;
                     break;
                 }
@@ -471,10 +473,10 @@ namespace Test.Pages
                      */
                     WaitForElement(sortButton);
                     WaitForElement(sortButton[3]);
-                    WaitForElementGoInvisible(By.CssSelector(".x-overlay__wrapper--right"));
-                    this.sortButton = WaitAndGetElements(By.CssSelector(".x-flyout__button"));
+                    WaitForElementGoInvisible(By.CssSelector(Strings.MODAL_SELECTOR));
+                    this.sortButton = WaitAndGetElements(By.CssSelector(Strings.SORT_BUTTON_SELECTOR));
                     this.numberOfResults = WaitAndGetElements(By.CssSelector
-                                                ("h1.srp-controls__count-heading > span.BOLD"));                   
+                                                (Strings.RESULTS_SELECTOR));           
                     
                     //If we manage to obtain all the items, we don't need to keep searching for them
                     NotRefreshed = false;
@@ -483,9 +485,9 @@ namespace Test.Pages
                 {
                     //If we weren't able to find the items, we retry again
                     this.numberOfResults = this.driver.FindElements
-                                (By.CssSelector("h1.srp-controls__count-heading > span.BOLD"));
+                                (By.CssSelector(Strings.RESULTS_SELECTOR));
                     this.sortButton = this.driver.FindElements
-                                (By.CssSelector(".x-flyout__button"));
+                                (By.CssSelector(Strings.SORT_BUTTON_SELECTOR));
 
                 }
         }

@@ -14,45 +14,10 @@ namespace Test.Gherkin.Step
     /// Class that contains all logic (steps) to search on Ebay
     /// </summary>
     [Binding]
-    public class EbaySteps //: BaseSteps
+    public class EbaySteps: BaseSteps
     {
         //Driver we will use to nagivate in Google Chrome
         private EbayPage ebayPage;
-
-        //Attributes of the class
-        protected IWebDriver driver;
-
-        
-
-        /// <summary>
-        /// Method used to load the initial configuration
-        /// </summary>
-        [BeforeScenario]
-        public void LoadTest()
-        {
-            //Asigning the chrome driver and setting the default wait
-            this.driver = new ChromeDriver();
-
-            //Setting the default wait
-            //this.driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(40);
-
-            //this.waitManager = new WebDriverWait(this.driver, TimeSpan.FromSeconds(20));            
-
-            //Instanciating EbayPage            
-            this.ebayPage = new EbayPage(this.driver);
-
-            //Opening browser in full window size
-            this.driver.Manage().Window.Maximize();            
-        }
-
-        /// <summary>
-        /// Method used to close the chromedriver
-        /// </summary>
-        [AfterScenario]
-        public void CloseTest()
-        {
-            this.driver.Quit();
-        }
 
         /// <summary>
         /// Step in which the user enters on Ebay webpage
@@ -60,6 +25,9 @@ namespace Test.Gherkin.Step
         [Given(@"User enters on Ebay")]
         public void GivenUserEntersOnEbay()
         {
+            //Instanciating EbayPage            
+            this.ebayPage = MainPageFactory.CreateEbayPage(driver);
+
             //Accessing into the webpage
             this.ebayPage.GoToUrl("https://www.ebay.com/");
 
